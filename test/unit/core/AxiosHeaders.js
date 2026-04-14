@@ -76,6 +76,22 @@ describe('AxiosHeaders', function () {
     })
   });
 
+  it('should throw on CRLF in header value', () => {
+    const headers = new AxiosHeaders();
+
+    assert.throws(() => {
+      headers.set('x-test', 'safe\r\nInjected: true');
+    }, /Invalid character in header content/);
+  });
+
+  it('should throw on CRLF in any array header value', () => {
+    const headers = new AxiosHeaders();
+
+    assert.throws(() => {
+      headers.set('set-cookie', ['safe=1', 'unsafe=1\nInjected: true']);
+    }, /Invalid character in header content/);
+  });
+
   it('should support uppercase name mapping for names overlapped by class methods', () => {
     const headers = new AxiosHeaders({
       set: 'foo'

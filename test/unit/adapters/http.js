@@ -184,6 +184,17 @@ describe('supports http with nodejs', function () {
     });
   });
 
+  it('should reject request headers containing CRLF characters', async () => {
+    await assert.rejects(
+      async () => axios.get('http://localhost:1/', {
+        headers: {
+          'x-test': 'ok\r\nInjected: yes',
+        },
+      }),
+      /Invalid character in header content/
+    );
+  });
+
   it('should parse the timeout property', function (done) {
 
     server = http.createServer(function (req, res) {

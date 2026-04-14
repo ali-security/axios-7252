@@ -1,6 +1,28 @@
 import adapters from '../../../lib/adapters/adapters.js';
 import assert from 'assert';
 
+import axios from '../../../index.js';
+
+const SERVER_PORT = 8010;
+const LOCAL_SERVER_URL = `http://localhost:${SERVER_PORT}`;
+
+const fetchAxios = axios.create({
+  baseURL: LOCAL_SERVER_URL,
+  adapter: 'fetch',
+});
+
+(typeof fetch === 'function' ? describe : describe.skip)('supports fetch with nodejs', () => {
+  it('should reject request headers containing CRLF characters', async () => {
+    await assert.rejects(
+      async () => fetchAxios.get(`${LOCAL_SERVER_URL}/`, {
+        headers: {
+          'x-test': 'ok\r\nInjected: yes',
+        },
+      }),
+      /(invalid.*header|header.*invalid)/i
+    );
+  });
+});
 
 describe('adapters', function () {
   const store = {...adapters.adapters};
